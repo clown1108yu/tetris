@@ -1,0 +1,83 @@
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style type="text/css">
+  table {
+    border-collapse: collapse;
+  }
+
+  table td {
+    width: 20px;
+    height: 20px;
+    border: 1px solid black;
+  }
+</style>
+<script type="text/javascript">
+  window.onload = function() {
+    var width = 10
+    var height = 20
+    var speed = 20
+    var html = ['<table>']
+    for (var y = 0; y < height; y++) {
+      html.push('<tr>')
+      for (var x = 0; x < width; x++) {
+        html.push('<td></td>')
+      }
+    }
+    html.push('</tr>')
+    html.push('</table>')
+    document.getElementById('view').innerHTML = html.join('')
+    var cells = document.getElementsByTagName('td')
+    var top = 2
+    var top0 = top
+    var left = Math.floor(width / 2);
+    var left0 = left
+    var w = width;
+    var angles = [
+      [-1, 1, 2],
+      [-w, w, w + w],
+      [-2, -1, 1],
+      [-w - w, -w, w]
+    ]
+    var angle = 0;
+    var parts0 = [];
+    var keys = {}
+    document.onkeydown = function(e) {
+      switch ((e || event).keyCode) {
+        case 37:
+          keys.left = true;
+          break;
+        case 39:
+          keys.right = true;
+          break;
+        case 32:
+          keys.rotate = true;
+          break;
+      }
+    }
+    var tick = 0
+    var move = function() {
+      tick++
+      left0 = left
+      if (keys.left && left > 0) left--;
+      if (keys.right && left + 4 < width) left++;
+      if (keys.rotate) angle++;
+      keys = {}
+      for (var i = -1; i < parts0.length; i++) {
+        var offset = parts0[i] || 0;
+        cells[top0 * width + left0 + offset].style.backgroundColor = '';
+      }
+      parts0 = angles[angle % angles.length];
+      for (var i = -1; i < parts0.length; i++) {
+        var offset = parts0[i] || 0;
+        cells[top * width + left + offset].style.backgroundColor = 'red';
+      }
+      top0 = top
+      if (tick % speed == 0) top++;
+      var info = tick + ' (' + left + ', ' + top + ')';
+      document.getElementById('info').innerHTML = info;
+      if (top < height) setTimeout(move, 1000 / speed)
+    }
+    move()
+  }
+</script>
+<div id="info"></div>
+<div id="view"></div>
